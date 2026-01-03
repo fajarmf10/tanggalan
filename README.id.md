@@ -120,6 +120,43 @@ $request->validate([
 
 ## Penggunaan Lanjutan
 
+### Algoritma Kalender Hijriah
+
+**Dua algoritma tersedia:**
+
+#### 1. Algoritma Um Al-Qura (Default - Direkomendasikan)
+- Berdasarkan kalender resmi Arab Saudi
+- Menggunakan pengamatan astronomi sebenarnya
+- **Akurat untuk tahun 1440-1500 H (2018-2079 M)**
+- Paling akurat untuk tanggal saat ini/dekat
+
+```php
+// Default - menggunakan Um Al-Qura
+$hijri = Tanggalan::toHijri('2025-01-04');
+```
+
+#### 2. Algoritma Tabular Islam (Tanpa hardcode!)
+- **Perhitungan matematis murni - TANPA tabel lookup!**
+- Bekerja untuk **SEMUA tanggal** (rentang tak terbatas)
+- Mungkin berbeda ±1 hari dari Um Al-Qura
+- Dapat diprediksi dan konsisten
+
+```php
+// Gunakan algoritma Tabular
+$tanggalan = Tanggalan::withTabularAlgorithm();
+$hijri = $tanggalan->toHijri('1850-01-01'); // Untuk tanggal historis!
+$hijri = $tanggalan->toHijri('2500-01-01'); // Untuk tanggal masa depan!
+```
+
+#### Perbandingan:
+| Fitur | Um Al-Qura | Tabular Islam |
+|-------|------------|---------------|
+| Akurasi | ±0 hari (pengamatan aktual) | ±1 hari |
+| Rentang Tanggal | 2018-2079 M | Tak terbatas |
+| Tabel Lookup | Ya (61 tahun) | Tidak (matematis murni) |
+| Kecepatan | Cepat | Cepat |
+| Kasus Penggunaan | Tanggal saat ini | Semua tanggal (historis/masa depan) |
+
 ### Penyesuaian Tanggal Hijriah
 
 Beberapa daerah mungkin memulai bulan Hijriah sehari lebih awal atau lambat karena perbedaan ru'yat hilal:
@@ -128,6 +165,9 @@ Beberapa daerah mungkin memulai bulan Hijriah sehari lebih awal atau lambat kare
 // Sesuaikan dengan -1, 0, atau +1 hari
 $tanggalan = Tanggalan::withAdjustment(-1);
 $hijri = $tanggalan->toHijri('2025-01-04');
+
+// Atau dengan algoritma Tabular + penyesuaian
+$tanggalan = Tanggalan::withTabularAlgorithm(-1);
 ```
 
 Di Laravel, atur ini di `config/tanggalan.php`:

@@ -120,6 +120,43 @@ $request->validate([
 
 ## Advanced Usage
 
+### Hijri Calendar Algorithms
+
+**Two algorithms available:**
+
+#### 1. Um Al-Qura Algorithm (Default - Recommended)
+- Based on official Saudi Arabian calendar
+- Uses actual astronomical observations
+- **Accurate for years 1440-1500 AH (2018-2079 CE)**
+- Most accurate for current/near dates
+
+```php
+// Default - uses Um Al-Qura
+$hijri = Tanggalan::toHijri('2025-01-04');
+```
+
+#### 2. Tabular Islamic Algorithm (No hardcoding!)
+- **Pure mathematical calculation - NO lookup tables!**
+- Works for **ANY date** (unlimited range)
+- May differ by ±1 day from Um Al-Qura
+- Predictable and consistent
+
+```php
+// Use Tabular algorithm
+$tanggalan = Tanggalan::withTabularAlgorithm();
+$hijri = $tanggalan->toHijri('1850-01-01'); // Works for historical dates!
+$hijri = $tanggalan->toHijri('2500-01-01'); // Works for future dates!
+```
+
+#### Comparison:
+| Feature | Um Al-Qura | Tabular Islamic |
+|---------|------------|-----------------|
+| Accuracy | ±0 days (actual observations) | ±1 day |
+| Date Range | 2018-2079 CE | Unlimited |
+| Lookup Table | Yes (61 years) | No (pure math) |
+| Speed | Fast | Fast |
+| Use Case | Current dates | Any date (historical/future) |
+
 ### Hijri Date Adjustment
 
 Some regions may observe Hijri months starting a day earlier or later due to moon sighting differences:
@@ -128,6 +165,9 @@ Some regions may observe Hijri months starting a day earlier or later due to moo
 // Adjust by -1, 0, or +1 day
 $tanggalan = Tanggalan::withAdjustment(-1);
 $hijri = $tanggalan->toHijri('2025-01-04');
+
+// Or with Tabular algorithm + adjustment
+$tanggalan = Tanggalan::withTabularAlgorithm(-1);
 ```
 
 In Laravel, configure this in `config/tanggalan.php`:

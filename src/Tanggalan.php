@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tanggalan;
 
 use DateTimeImmutable;
+use Tanggalan\Algorithm\AlgorithmInterface;
+use Tanggalan\Algorithm\TabularIslamicAlgorithm;
 use Tanggalan\Algorithm\UmAlQuraAlgorithm;
 use Tanggalan\Calculator\WetonCalculator;
 use Tanggalan\Converter\GregorianToHijriConverter;
@@ -29,12 +31,14 @@ final class Tanggalan
 
     /**
      * @param int $hijriAdjustment Day adjustment for Hijri calendar (-1, 0, or +1)
+     * @param AlgorithmInterface|null $algorithm Custom algorithm (defaults to UmAlQura)
      */
     public function __construct(
-        private readonly int $hijriAdjustment = 0
+        private readonly int $hijriAdjustment = 0,
+        ?AlgorithmInterface $algorithm = null
     ) {
         // Dependency Injection: Create dependencies
-        $algorithm = new UmAlQuraAlgorithm($this->hijriAdjustment);
+        $algorithm = $algorithm ?? new UmAlQuraAlgorithm($this->hijriAdjustment);
         $this->wetonCalculator = new WetonCalculator();
 
         $this->gregorianToHijriConverter = new GregorianToHijriConverter($algorithm);
@@ -103,5 +107,30 @@ final class Tanggalan
     public static function withAdjustment(int $adjustment): static
     {
         return new self($adjustment);
+    }
+
+    /**
+     * Create instance with Tabular Islamic Calendar algorithm
+     *
+     * Pure mathematical algorithm - works for any date!
+     * May differ by ±1 day from Um Al-Qura (which uses observations)
+     *
+     * @param int $adjustment Day adjustment (-1, 0, or +1)
+     * @return static
+     */
+    public static function withTabularAlgorithm(int $adjustment = 0): static
+    {
+        return new self($adjustment, new TabularIslamicAlgorithm($adjustment));
+    }
+
+    /**
+     * Create instance with custom algorithm
+     *
+     * @param AlgorithmInterface $algorithm Custom Hijri algorithm
+     * @return static
+     */
+    public static function withAlgorithm(AlgorithmInterface $algorithm): static
+    {
+        return new self(0, $algorithm);
     }
 }
