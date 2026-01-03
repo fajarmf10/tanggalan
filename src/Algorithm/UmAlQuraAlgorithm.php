@@ -11,11 +11,11 @@ use Tanggalan\ValueObject\HijriDate;
 /**
  * Um Al-Qura Algorithm for Hijri calendar conversion
  * Based on the official Saudi Arabian Hijri calendar
- * Accurate for Hijri years 1318-1500 AH (1900-2077 CE)
+ * Accurate for Hijri years 1440-1500 AH (2018-2079 CE)
  */
 final class UmAlQuraAlgorithm implements AlgorithmInterface
 {
-    private const MIN_HIJRI_YEAR = 1318;
+    private const MIN_HIJRI_YEAR = 1440;
     private const MAX_HIJRI_YEAR = 1500;
 
     /**
@@ -76,7 +76,7 @@ final class UmAlQuraAlgorithm implements AlgorithmInterface
             throw ConversionException::failedToConvert(
                 'Hijri',
                 'Gregorian',
-                "Year {$year} is outside supported range (1318-1500 AH)"
+                "Year {$year} is outside supported range (1440-1500 AH)"
             );
         }
 
@@ -102,7 +102,7 @@ final class UmAlQuraAlgorithm implements AlgorithmInterface
         $days -= $this->adjustment;
 
         // Hijri epoch in Gregorian calendar
-        $hijriEpoch = new DateTimeImmutable('1900-04-30'); // 1318 AH Muharram 1
+        $hijriEpoch = new DateTimeImmutable('2018-09-11'); // 1440 AH Muharram 1
 
         return $hijriEpoch->modify("+{$days} days");
     }
@@ -158,13 +158,6 @@ final class UmAlQuraAlgorithm implements AlgorithmInterface
      */
     private function getLookupTable(): array
     {
-        // Simplified lookup table for demonstration
-        // In production, this would be loaded from a data file with all years 1318-1500
-        return [
-            1446 => [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29], // 2024-2025
-            1447 => [30, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30], // 2025-2026
-            1448 => [29, 30, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29], // 2026-2027
-            // More years would be added here...
-        ];
+        return UmAlQuraData::getLookupTable();
     }
 }

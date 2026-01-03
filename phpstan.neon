@@ -1,0 +1,10 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - laravel
+    excludePaths:
+        - tests
+        - vendor
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
